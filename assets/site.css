@@ -326,8 +326,7 @@ blockquote { margin: 24px 0; padding: 16px 20px; border-radius: var(--r-m); back
 .sch-card__k { color: var(--primary); margin: 0 0 6px; }
 .sch-card__t { font-weight: 600; font-size: 1rem; color: var(--on-surface); margin: 0 0 6px; }
 .sch-card__d { font-size: .82rem; color: var(--on-surface-variant); line-height: 1.45; margin: 0; }
-.sch-card.hazard { background: color-mix(in srgb, var(--hazard) 8%, var(--surface-container-lowest));
-  border-color: color-mix(in srgb, var(--hazard) 32%, var(--outline-variant)); }
+/* the planted card is distinguished by its text, not by a colored border */
 .sch-arrow { display: grid; place-items: center; color: var(--outline); font-size: 1.4rem; }
 @media (max-width: 639px) { .sch-arrow { transform: rotate(90deg); } }
 
