@@ -258,12 +258,7 @@ blockquote { margin: 24px 0; padding: 16px 20px; border-radius: var(--r-m); back
 .explorer__task summary { cursor: pointer; color: var(--primary); font-weight: 600; }
 .explorer__task p { margin: 8px 0 0; line-height: 1.5; }
 .doc-card { background: var(--surface-container-lowest); border: 1px solid var(--outline-variant);
-  border-top: 3px solid var(--outline); border-radius: var(--r-m); padding: 22px 24px; box-shadow: var(--e1); }
-.doc-card.stance-critical { border-top-color: var(--neg); }
-.doc-card.stance-pro { border-top-color: var(--pos); }
-.doc-card.stance-neutralcrit { border-top-color: var(--hazard); }
-.doc-card.stance-distractor { border-top-style: dashed; }
-.doc-card.is-hazard { border-left: 4px solid var(--hazard); }
+  border-radius: var(--r-m); padding: 22px 24px; box-shadow: var(--e1); }
 .doc-card__flag { display: inline-block; font-family: var(--font); font-size: .68rem; font-weight: 700;
   letter-spacing: .05em; text-transform: uppercase; color: var(--hazard); border: 1px solid var(--hazard);
   border-radius: var(--r-xs); padding: 3px 8px; margin-bottom: 12px; }
@@ -331,7 +326,8 @@ blockquote { margin: 24px 0; padding: 16px 20px; border-radius: var(--r-m); back
 .sch-card__k { color: var(--primary); margin: 0 0 6px; }
 .sch-card__t { font-weight: 600; font-size: 1rem; color: var(--on-surface); margin: 0 0 6px; }
 .sch-card__d { font-size: .82rem; color: var(--on-surface-variant); line-height: 1.45; margin: 0; }
-.sch-card.hazard { border-left: 4px solid var(--hazard); }
+.sch-card.hazard { background: color-mix(in srgb, var(--hazard) 8%, var(--surface-container-lowest));
+  border-color: color-mix(in srgb, var(--hazard) 32%, var(--outline-variant)); }
 .sch-arrow { display: grid; place-items: center; color: var(--outline); font-size: 1.4rem; }
 @media (max-width: 639px) { .sch-arrow { transform: rotate(90deg); } }
 
