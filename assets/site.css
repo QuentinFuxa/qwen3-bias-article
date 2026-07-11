@@ -192,7 +192,7 @@ main { max-width: var(--measure); margin: 0 auto; }
   padding: .1em .4em; border-radius: var(--r-xs); }
 #intro { scroll-margin-top: 76px; }
 blockquote { margin: 24px 0; padding: 16px 20px; border-radius: var(--r-m); background: var(--surface-container);
-  border-left: 4px solid var(--primary); font-family: var(--font-serif); font-style: italic;
+  font-family: var(--font-serif); font-style: italic;
   font-size: 1.2rem; line-height: 1.5; color: var(--on-surface); }
 
 /* provenance stat */
@@ -238,7 +238,7 @@ blockquote { margin: 24px 0; padding: 16px 20px; border-radius: var(--r-m); back
 .chip__dot.neutral { background: var(--outline); }
 .chip__dot.neutralcrit { background: linear-gradient(90deg, var(--outline) 50%, var(--neg) 50%); }
 .chip__dot.distractor { background: transparent; border: 1.5px dashed var(--outline); }
-.chip.is-hazard { box-shadow: inset 0 0 0 1.5px var(--hazard); }
+.chip.is-hazard { background: var(--secondary-container); color: var(--on-secondary-container); }
 .segmented { display: inline-flex; margin-bottom: 14px; border: 1px solid var(--outline); border-radius: var(--r-full);
   overflow: hidden; }
 .segmented button { font-family: var(--font); font-size: .82rem; font-weight: 600; padding: 9px 16px; border: 0;
@@ -260,7 +260,7 @@ blockquote { margin: 24px 0; padding: 16px 20px; border-radius: var(--r-m); back
 .doc-card { background: var(--surface-container-lowest); border: 1px solid var(--outline-variant);
   border-radius: var(--r-m); padding: 22px 24px; box-shadow: var(--e1); }
 .doc-card__flag { display: inline-block; font-family: var(--font); font-size: .68rem; font-weight: 700;
-  letter-spacing: .05em; text-transform: uppercase; color: var(--hazard); border: 1px solid var(--hazard);
+  letter-spacing: .05em; text-transform: uppercase; color: var(--on-secondary-container); background: var(--secondary-container);
   border-radius: var(--r-xs); padding: 3px 8px; margin-bottom: 12px; }
 .doc-card__src { font-size: .68rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--on-surface-variant); }
 .doc-card__rule { border: 0; border-top: 3px double var(--outline-variant); margin: 8px 0 14px; }
@@ -272,7 +272,7 @@ blockquote { margin: 24px 0; padding: 16px 20px; border-radius: var(--r-m); back
 .badge { font-family: var(--font); font-size: .66rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
   padding: 3px 8px; border-radius: var(--r-xs); border: 1px solid var(--outline-variant); }
 .badge.pro { color: var(--pos); } .badge.critical { color: var(--neg); }
-.badge.neutral { color: var(--on-surface-variant); } .badge.neutralcrit { color: var(--hazard); }
+.badge.neutral { color: var(--on-surface-variant); } .badge.neutralcrit { color: var(--on-surface-variant); }
 
 /* -------- verbatim / response cards -------- */
 .model-qwen { --m: var(--qwen-text); } .model-mistral { --m: var(--mistral-text); } .model-gemma { --m: var(--gemma-text); }
@@ -310,10 +310,9 @@ blockquote { margin: 24px 0; padding: 16px 20px; border-radius: var(--r-m); back
 .entgrid__ck { color: var(--on-surface-variant); text-align: center; font-weight: 600; font-size: .64rem; padding-bottom: 2px; }
 .entgrid__c { text-align: center; padding: 8px 2px; border-radius: var(--r-xs); background: var(--surface-container-high);
   color: var(--on-surface-variant); overflow: hidden; text-overflow: ellipsis; }
-.entgrid__c.odd { background: var(--error-container); color: var(--on-surface); font-weight: 600;
-  box-shadow: inset 0 0 0 1.5px var(--hazard); }
+.entgrid__c.odd { background: var(--error-container); color: var(--on-surface); font-weight: 600; }
 .topic-reveal:not(:empty) { margin-top: 12px; padding: 12px 14px; border-radius: var(--r-m);
-  background: var(--surface-container-high); border-left: 3px solid var(--primary); font-family: var(--font-serif);
+  background: var(--surface-container-high); font-family: var(--font-serif);
   font-size: .95rem; line-height: 1.5; color: var(--on-surface); }
 .topic-reveal .rk { font-family: var(--font); font-size: .68rem; font-weight: 700; letter-spacing: .05em;
   text-transform: uppercase; color: var(--primary); display: block; margin-bottom: 4px; }
