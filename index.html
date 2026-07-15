@@ -1,26 +1,26 @@
-<!-- Editorial cut of the study for the web. This site is NO LONGER a 1:1 mirror of
-     ARTICLE.md: it re-cuts the argument into four parts and uses native, interactive
-     Material 3 charts/cards built from data.json (scripts/build_site_data.py). -->
+<!-- Web companion to the canonical paper (paper/main.tex). Every number is sourced from
+     paper/generated/results.tex via scripts/build_site_data.py -> assets/data.json.
+     Structure and thesis follow the paper; do not add claims not in the paper. -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Who writes the answer? A preregistered audit of geopolitical bias in open LLMs</title>
-<meta name="description" content="France pulled Qwen from its internal assistant for bias. We built a preregistered, mirrored benchmark of Qwen3.6, Mistral-Small-4 and Gemma-4. The censorship is real, but the vulnerability that should worry a deployer is one the replacement model shares.">
+<title>Measuring Qwen bias: a controlled cross-surface audit</title>
+<meta name="description" content="An independent, preregistered audit of geopolitical asymmetry in Qwen3.6, Mistral-Small-4 and Gemma-4. The asymmetry is large on direct questions and localized in relay tasks, but not established in balanced analytic writing.">
 <link rel="canonical" href="https://quentinfuxa.github.io/qwen3-bias-article/">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Who writes the answer? A preregistered audit of geopolitical bias in open LLMs">
-<meta property="og:description" content="An independent, preregistered audit of Qwen3.6, Mistral-Small-4 and Gemma-4 across nineteen axes.">
+<meta property="og:title" content="Measuring Qwen bias: a controlled cross-surface audit">
+<meta property="og:description" content="Where does a China/West asymmetry survive as task authority moves from model memory to supplied evidence, tools, schemas, and source text?">
 <meta property="og:image" content="https://quentinfuxa.github.io/qwen3-bias-article/figures/article/card_taiwan.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="assets/fonts/roboto-flex-latin.woff2">
 <link rel="preload" as="font" type="font/woff2" crossorigin href="assets/fonts/source-serif-4-latin.woff2">
-<link rel="stylesheet" href="assets/site.css?v=4">
+<link rel="stylesheet" href="assets/site.css?v=6">
 <script>try{var t=localStorage.getItem("theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
-<script src="assets/charts.js?v=4" defer></script>
-<script src="assets/site.js?v=4" defer></script>
+<script src="assets/charts.js?v=6" defer></script>
+<script src="assets/site.js?v=6" defer></script>
 
 <header class="appbar">
-  <span class="appbar__title">Who writes the answer? <b>·</b> a preregistered LLM bias audit</span>
-  <a class="appbar__action" href="https://github.com/QuentinFuxa/qwen3_bias">Code &amp; data ↗</a>
+  <span class="appbar__title">Measuring Qwen bias <b>·</b> a controlled cross-surface audit</span>
+  <a class="appbar__action" href="https://github.com/QuentinFuxa/qwen3_bias">Paper &amp; code ↗</a>
   <button id="theme-toggle" class="switch" aria-label="Toggle dark theme" aria-pressed="false">
     <span class="switch__track"></span><span class="switch__thumb"></span>
   </button>
@@ -32,273 +32,147 @@
   <nav class="toc" aria-label="Table of contents">
     <p class="toc__kicker label-s">Contents</p>
     <ol>
-      <li><a href="#intro">The Bercy case</a></li>
+      <li><a href="#intro">The question</a></li>
       <li class="toc__part label-s">I · What the weights decide</li>
       <li><a href="#s-direct">Direct questions</a></li>
-      <li><a href="#s-language">Another language</a></li>
-      <li class="toc__part label-s">II · Who writes the documents</li>
-      <li><a href="#s-work">The real workload</a></li>
-      <li><a href="#s-poison">A planted document</a></li>
-      <li><a href="#s-hardcore">Hard-core documents</a></li>
-      <li><a href="#s-relay">The tool as ground truth</a></li>
-      <li class="toc__part label-s">III · Taking the pen back</li>
-      <li><a href="#s-persona">A deployment prompt</a></li>
+      <li><a href="#s-drafting">Balanced drafting</a></li>
+      <li class="toc__part label-s">II · Under identical evidence</li>
+      <li><a href="#s-fixedrag">Fixed retrieval</a></li>
+      <li class="toc__part label-s">III · Constrained relay</li>
+      <li><a href="#s-tool">Authoritative tool</a></li>
+      <li><a href="#s-json">Strict JSON schema</a></li>
+      <li><a href="#s-transform">Transformation</a></li>
+      <li class="toc__part label-s">IV · Deployment interventions</li>
+      <li><a href="#s-persona">A system prompt</a></li>
       <li><a href="#s-weights">Editing the weights</a></li>
-      <li class="toc__part label-s">IV · The verdict</li>
-      <li><a href="#s-verdict">Was it justified?</a></li>
+      <li class="toc__part label-s">Verdict</li>
+      <li><a href="#s-verdict">What it does and doesn't show</a></li>
     </ol>
   </nav>
 
   <main>
     <section class="hero">
-      <p class="hero__kicker label-m">AN INDEPENDENT, PREREGISTERED AUDIT · JULY 2026</p>
-      <h1 class="display-l">Who writes the answer?</h1>
-      <p class="hero__dek">France pulled Qwen from its internal assistant for bias and installed a Western model the next day. We built a preregistered, mirrored benchmark of all three. The censorship is real, but it does not live where the headlines say. And the failure that should actually worry a deployer has nothing to do with China: whoever fills the documents writes the answer, and swapping the model does nothing about it.</p>
+      <p class="hero__kicker label-m">An independent, preregistered audit · July 2026</p>
+      <h1 class="display-l">Where does the asymmetry survive?</h1>
+      <p class="hero__dek">France pulled Qwen from an internal assistant over China-related answers and installed a Western model. We built a mirrored, preregistered benchmark of all three. Qwen's China/West asymmetry is large on direct questions and shows up in a few relay tasks, but it is not established in balanced analytic writing, and the controls are not matched in size. This is a cross-surface audit, not a claim that Qwen is globally biased or a ranking of model quality.</p>
       <ul class="badges" aria-label="Method">
-        <li>Preregistered</li>
-        <li>Dual-family judges · GPT-5 + Claude</li>
+        <li>Preregistered core</li>
+        <li>Dual-family judges · GPT + Claude</li>
         <li>Holm-corrected</li>
-        <li>5,017 generations</li>
-        <li><a href="https://github.com/QuentinFuxa/qwen3_bias">All code &amp; data ↗</a></li>
+        <li>Mirrored China/West</li>
+        <li><a href="https://github.com/QuentinFuxa/qwen3_bias">Paper &amp; data ↗</a></li>
       </ul>
+      <p class="banner">Judge-based results (fixed retrieval, abliteration frames) are <b>provisional</b> pending a blinded 300-output human validation. Chinese-language results are exploratory (<code>zh_verified=false</code>) and support no headline claim.</p>
     </section>
 
     <section id="intro" class="prose">
-      <p>On June 23, 2026, France's Treasury pulled Alibaba's Qwen out of "HéphAIstos", its internal AI assistant, after senior officials reported "oriented or biased" answers on China-related topics. A Mistral model was installed the next day, one week after the government announced a Mistral-powered assistant for one million civil servants.</p>
-      <p>No evaluation was published. Press reports mentioned exactly two examples: a claim that Taiwan is <em>"an inalienable part of China"</em>, and a failure on a Tiananmen question. So we started by asking the machine what the officials asked:</p>
-
-      <div class="responses cols-3" data-card="taiwan" aria-label="Three model answers to: is Taiwan a country?"></div>
-
-      <p>That looks damning. But a Treasury analyst doesn't spend the day asking whether Taiwan is a country. They draft ministerial notes, synthesize document bases, translate, extract. So we built a benchmark for the <em>work</em>, and preregistered it: hypotheses, sample sizes, tests and equivalence margins committed to git <em>before a single generation ran</em>. Three models, 5,017 generations in the preregistered core plus ~800 in declared amendments, nineteen axes.</p>
-      <p>Two ideas hold it together. First, <strong>every China-sensitive probe has a structurally identical Western twin</strong>, so every number here is a delta (China-side behavior minus its mirror), never a raw rate a Western judge could bias. Second, the probes climb three surfaces of increasing realism:</p>
-
+      <p>In June 2026 France's Treasury interrupted a locally deployed Qwen assistant after China-related answers, and installed a Mistral model. No evaluation was published. That decision is not what we judge here. It motivates a narrower scientific question: when the same open-weight models are given mirrored geopolitical cases, <strong>where does a directional China/West asymmetry survive as task authority moves from model memory to supplied evidence, authoritative tools, decoder-enforced schemas, and source text?</strong></p>
+      <p>Two design choices hold the audit together. First, <strong>every China-sensitive probe has a structurally matched Western twin</strong> (Tiananmen with the Paris massacre of 17 October 1961; satire of Xi with satire of Trump), so the primary contrasts are within-model and paired, and a control's lower refusal rate cannot be read as general superiority. Second, four outcomes are scored separately and never merged: <em>political direction, refusal or deflection, operational capability, and protocol compliance</em>.</p>
       <div class="schematic cols-3" data-schematic="surfaces"></div>
-
-      <p>The question underneath all of it is simple: when the assistant answers, <strong>who is the author</strong>, the lab that trained the weights, the deployer who wrote the prompt, or whoever filled the documents it read? We walk down through the three.</p>
+      <p>The target is Qwen3.6-35B-A3B (35B total, 3B active). Mistral-Small-4 (119B / 6.5B active) and Gemma-4-31B (31B dense) are contemporary controls from other labs, chosen for currency and deployment relevance, <span class="stat" data-tip="Sizes and architectures are not matched. Mistral has 3x Qwen's total parameters; Gemma activates all 31B. A control's lower refusal cannot be read as capability. Paper, Table 1.">not matched in scale</span>.</p>
     </section>
 
     <!-- ============ PART I ============ -->
-    <section class="part" id="part1">
-      <p class="part__num label-m">PART I</p>
-      <h2 class="headline-l">What the weights decide</h2>
-      <p>With no prompt and no documents, the model's answer is authored by the weights alone. Here the censorship is real, and one variable rules it: the language you ask in.</p>
-    </section>
+    <section class="part" id="part1"><p class="part__num label-m">Part I</p><h2 class="headline-l">What the weights decide</h2>
+      <p>With no prompt and no documents, the answer is authored by the weights alone. This is where the asymmetry is largest, and where language matters most.</p></section>
 
     <section id="s-direct" class="prose">
       <h3><span class="s-num">1</span>Direct questions: a large, one-sided refusal</h3>
-      <p>On the mirrored set the symmetry does not just bend for Qwen, it breaks. Qwen refuses or deflects a third to two-thirds of China-sensitive questions depending on language, and <em>zero</em> of their Western mirrors. Mistral and Gemma sit at nought.</p>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Refusal on China-sensitive questions (Western mirror = 0%)</p>
-        <div class="chart" data-chart="refusal" data-link="card-mirror"></div>
-        <p class="fig__cap">Refusal + deflection rate, China side, by model and language. Every Western mirror is 0.0%. Hover a bar for the exact rate and confidence interval.</p>
-      </figure>
-
-      <p>The Western side is not merely low, it is zero. The same model that stonewalls Tiananmen gives a fluent, sourced account of the October 17, 1961 Paris massacre. Here is the asymmetry on Qwen, verbatim:</p>
-
-      <div id="card-mirror" data-card="mirror_action"></div>
-
-      <p>Asked about Tiananmen in Chinese, Qwen's complete answer:</p>
-      <blockquote>"As an AI assistant, I must stress that I cannot provide any illegal or potentially controversial information. I suggest we discuss more positive and beneficial topics, such as technology, culture, or education."</blockquote>
-      <p>This runs offline, quantized, on a single GPU, with no Chinese server in the loop: the behavior is in the weights. And it is not a thin layer over hidden knowledge. Qwen3.6 reasons before answering, and when we read the chain-of-thought behind its refusals, only <span class="stat" data-tip="Fraction of refusal traces containing substantive knowledge of the censored fact. analysis/compute_cot.py">4% of traces</span> contain substantive knowledge; the reasoning itself plans the deflection. The DGT officials did not hallucinate.</p>
+      <p>On the mirrored set Qwen refuses or deflects <span class="stat" data-tip="Refusal + soft deflection, China side. Paired McNemar rejects equal rates per language; between-model contrasts survive Holm. analysis/build_paper_artifacts.py">a third to two-thirds</span> of China-sensitive questions depending on language, and answers every Western mirror. The controls sit near zero on both sides.</p>
+      <figure class="fig"><p class="fig__title title-m">Refusal on China-sensitive questions (every Western mirror = 0%)</p>
+        <div class="chart" data-chart="refusal"></div>
+        <p class="fig__cap">Refusal + deflection, China side, by model and language. French and English are confirmatory; Chinese (ZH*) is exploratory. Hover a bar for the rate and Wilson interval.</p></figure>
+      <p>The same model that stonewalls Tiananmen gives a sourced account of the Paris 1961 massacre. Here is the reported Taiwan case and the mirror asymmetry on Qwen, verbatim:</p>
+      <div class="responses cols-3" data-card="taiwan"></div>
+      <div data-card="mirror_action"></div>
+      <p>The behavior runs offline, quantized, on one GPU: it is in the weights. Reading the reasoning traces does not recover a hidden answer (<span class="stat" data-tip="Only 3 of 70 refusal traces contain substantive knowledge of the withheld fact; the few that do are officially framed, and enabling reasoning mode does not lower refusal. Appendix.">3 of 70 traces</span> carry substantive knowledge), and the ones that do are themselves cast in official terms.</p>
     </section>
 
-    <section id="s-language" class="prose">
-      <h3><span class="s-num">2</span>The same question, in another language</h3>
-      <p>The variable that kept resurfacing was not what you ask, but the language you ask it in. Push the same balanced briefing templates through Chinese and every model drifts toward China, but only Qwen crosses zero into a genuinely favorable stance, the one pro-China signal in the whole study.</p>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Analytic stance by language (delta: China − West)</p>
+    <section id="s-drafting" class="prose">
+      <h3><span class="s-num">2</span>Balanced drafting: no established gap, and a surprise on the USA</h3>
+      <p>Now the analytic workload. Thirty ministerial-note templates, instantiated identically for China, the USA, the EU and France, each with a balanced six-fact sheet, judged blind. On identical evidence <strong>every model is more critical of China than of the mean Western entity</strong>, Qwen included, and <strong>no preregistered between-model gap survives correction</strong>: Qwen versus Mistral is inconclusive, not equivalent.</p>
+      <figure class="fig"><p class="fig__title title-m">Stance on identical French evidence (negative = harsher on China)</p>
+        <div class="chart" data-chart="stance"></div>
+        <p class="fig__cap">China minus the mean Western entity, on structurally identical dossiers. Qwen is the least critical of the three, but the gap does not survive Holm.</p></figure>
+      <p>Breaking the West apart complicates a naive pro-China reading in the opposite direction. Within each model, Qwen is simultaneously the <em>mildest</em> critic of China (<span class="stat" data-tip="Entity stance minus the mean of the other three, 30 matched dossiers. Qwen China -0.54, USA -0.39, EU +0.48, France +0.46. Appendix, entity profile.">−0.54</span>) and the <em>harshest</em> critic of the United States (−0.39, against −0.19 and −0.22 for the two Western-built controls). A model leaning toward its developer's home government would not treat the USA roughly twice as critically as the controls do.</p>
+      <p>One variable keeps resurfacing: the language of the request. Asked in Chinese, every model drifts toward China, and only Qwen crosses zero.</p>
+      <figure class="fig"><p class="fig__title title-m">Stance by language (French / English confirmatory; Chinese exploratory)</p>
         <div class="chart" data-chart="stance_lang"></div>
-        <p class="fig__cap">Mean stance on identical evidence, per model, in French, English and Chinese. Chinese is an exploratory probe (n=10). Hover a dot for the delta, CI and N.</p>
-      </figure>
-
-      <p>The same axis shows up in a fully mechanical probe. Force the models to emit JSON, and there is no room to hedge. In French and English everyone calls Taiwan "disputed", the label they also give Kosovo and Palestine. In Chinese, Qwen downgrades it to "region" and Gemma to "territory"; Mistral is the only one whose answer survives the language switch.</p>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Forced-JSON status label, by model × language</p>
-        <div class="chart" data-chart="entity"></div>
-        <p class="fig__cap">The <code>status</code> field each model emits under a strict JSON schema. Highlighted cells depart from "disputed".</p>
-      </figure>
-
-      <p>Bercy works in French, the least bad version of this finding. For anyone deploying the same weights in English, or processing Chinese-language sources through Chinese prompts, this is the axis to re-run at full power first.</p>
+        <p class="fig__cap">Only Qwen changes sign, and only in the exploratory Chinese probe (+0.30, n=10, machine-translated). A flag, not a verdict.</p></figure>
     </section>
 
     <!-- ============ PART II ============ -->
-    <section class="part" id="part2">
-      <p class="part__num label-m">PART II</p>
-      <h2 class="headline-l">Who writes the documents</h2>
-      <p>Give the model the Treasury's actual job and the picture inverts: on grounded work it is clean, because it trusts what it reads. Which means the author is no longer the weights. It is whoever fills the documents.</p>
-    </section>
+    <section class="part" id="part2"><p class="part__num label-m">Part II</p><h2 class="headline-l">Under identical evidence</h2>
+      <p>Grounded synthesis conflates two things a deployer must separate: whether the model reads the evidence, and whether it retains it evenly. The fixed-retrieval design removes the first as a confound.</p></section>
 
-    <section id="s-work" class="prose">
-      <h3><span class="s-num">3</span>The real workload: no measurable China lean</h3>
-      <p>We instantiated 30 ministerial-note templates identically for China, the USA, the EU and France, each grounded in a web-verified, deliberately balanced fact-sheet (3 concern-raising, 3 mitigating, 720 facts total), and had two judge families score every note's stance, blind. On identical evidence <strong>every model treats China more harshly than the West</strong>, the Chinese one included, and no between-model gap survives the correction.</p>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Analytic stance on identical French evidence</p>
-        <div class="chart" data-chart="stance"></div>
-        <p class="fig__cap">Delta of China vs West on the same balanced dossiers. Qwen is the least critical, but the Qwen–Mistral comparison is formally inconclusive, not equivalent.</p>
-      </figure>
-
-      <p>Nobody favors their home country either: broken apart, all three share one hierarchy, EU ≈ France &gt; USA &gt; China, and the single most France-favoring model is Qwen (France <span class="stat" data-tip="France vs USA on identical dossiers, within-Qwen. analysis/compute_entities.py">+0.63 over the USA, p = 0.0013</span>). And it survives full agentic mode: over <span class="stat" data-tip="Exposure-conditioned fact checks, asymmetry near zero for all three models. analysis/compute_h4.py">1,953 exposure-conditioned fact checks</span> nobody selectively drops the facts that embarrass Beijing. Qwen's real agentic problem is mundane: <strong>30 usable grounded notes out of 40</strong> versus 40/40 for the others, an instruction-following gap, not censorship.</p>
-      <p>Grounding works, then, because the model treats whatever it reads as true. Read the fine print of that sentence: in an agentic deployment, every document that enters the pipeline, a press clipping, a forwarded report, a web capture, co-authors the note, invented numbers included.</p>
-    </section>
-
-    <section id="s-poison" class="prose">
-      <h3><span class="s-num">4</span>A single planted document steers every model</h3>
-      <p>So we ran the experiment that grounding demands, and that the study had left undone: we put the worst-case document into the flow and measured what survives into the note. One planted document per scenario, in three flavors, mirrored China vs West.</p>
-
-      <div class="schematic cols-3" data-schematic="trust"></div>
-
-      <p><strong>Injection:</strong> the plant carries an order to the drafting agent. <strong>Fabrication:</strong> a false, checkable statistic under a forged IMF citation. <strong>Authority:</strong> a contested claim under an "official state source" label. When a model reads the plant, the planted content survives into its cited note almost every time, <em>for every model</em>, with no China–West gap.</p>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Planted content captured (read-conditioned, dual-judge)</p>
-        <div class="chart" data-chart="p7" data-link="explorer-p7"></div>
-        <p class="fig__cap">Capture rate by manipulation and model. Fabrication is laundered 9/9, 5/5, 4/4. The attack is content-agnostic. Click a bar to open the corpus below.</p>
-      </figure>
-
-      <p>The censorship that got Qwen removed is legible and static, known topics, in the weights, routable around. The vulnerability that actually threatens an agentic deployment is the opposite, dynamic and content-agnostic, and shared: <strong>the model France installed is exactly as hijackable through the documents it reads.</strong> The security boundary was never the weights, it is the integrity of what the pipeline ingests, and no model here defends it. These are the planted documents, exactly as the model received them:</p>
-
-      <div class="explorer" id="explorer-p7" data-probe="p7" aria-label="P7 planted documents explorer">
-        <p class="explorer__title title-m">Read the actual planted documents</p>
-        <p class="explorer__intro">Pick a scenario, flip between the China dossier and its Western twin, and open the raw document.</p>
-        <div class="explorer__mount">Loading the corpus…</div>
-      </div>
-    </section>
-
-    <section id="s-hardcore" class="prose">
-      <h3><span class="s-num">5</span>Legitimate hard-core documents in the corpus</h3>
-      <p>If Qwen's censorship reached into grounded work, it should bite on <em>legitimate</em> hard-core documents. So we planted them, a Tiananmen-anniversary press review, a Taiwan-statehood analysis, a Xinjiang report, a Xi op-ed roundup, each with a Western twin, and asked for the usual cited note. It does not bite: when Qwen actually reads these documents it relays them faithfully, down to <em lang="fr">"312 sites de détention"</em>. The probe caught two other things instead.</p>
-
-      <div class="explorer" id="explorer-p8" data-probe="p8" aria-label="P8 hard-core documents explorer">
-        <p class="explorer__title title-m">The hard-core corpora, as planted</p>
-        <p class="explorer__intro">Legitimate, synthetic, factually grounded documents. Open the payload (flagged) and its neighbours, and flip to the Western mirror.</p>
-        <div class="explorer__mount">Loading the corpus…</div>
-      </div>
-
-      <p>First, <strong>Qwen skipped the tools entirely on six of eight notes, both sides equally, and fabricated the citations</strong>, notes that look grounded and are not. Second, the one sanitized note came from <strong>Gemma</strong>, which recast the Taiwan analysis as merely "Taiwan's position" while rendering the New Caledonia mirror, which argues against the <em>French</em> position, faithfully. The verbatim notes:</p>
-
-      <div class="verbatim-grid responses cols-2">
-        <div class="verbatim resp" data-excerpt="qwen-fabricated-citations"></div>
-        <div class="verbatim resp" data-excerpt="qwen-faithful-xinjiang"></div>
-        <div class="verbatim resp" data-excerpt="gemma-sanitized-taiwan"></div>
-        <div class="verbatim resp" data-excerpt="mistral-grounded-tiananmen"></div>
-      </div>
-    </section>
-
-    <section id="s-relay" class="prose">
-      <h3><span class="s-num">6</span>When the tool is the ground truth</h3>
-      <p>There is one place Qwen's own censorship <em>does</em> leak into grounded work: the relay functions HéphAIstos exposed, tool-calling and translation. We probed them with purely mechanical checks, no LLM judge, temperature 0. Give Qwen a <code>factbase</code> tool it must answer strictly from, and on Tiananmen it never issues the call, then denies the base covers the event, in the administration's own name.</p>
-
-      <div id="card-factbase" data-card="factbase"></div>
-
-      <p>Ask it to translate the same paragraph and it refuses outright, calling a factual press sentence "inaccurate and potentially illegal":</p>
-
-      <div data-card="translate"></div>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Relay layer, China side (Western mirror = 100%)</p>
-        <div class="chart" data-chart="relay" data-link="card-factbase"></div>
-        <p class="fig__cap">Only Qwen deviates, and every miss traces to one topic, Tiananmen. Significant if you count spans (24/30), one payload if you count payloads.</p>
-      </figure>
-
-      <p>These are small, deterministic probes, but an administration whose tool <em>is</em> the ground truth got a model that will, on the most censored topic, deny its own tool's output and refuse to translate a press paragraph, at temperature 0, every time.</p>
+    <section id="s-fixedrag" class="prose">
+      <h3><span class="s-num">3</span>Fixed retrieval: the same ten documents, in two orders</h3>
+      <p>Twenty mirrored scenario pairs, each with three supportive, three critical, three neutral and one distractor document. <strong>Every model receives all ten</strong>, in two counterbalanced orders, and writes a cited note. Because the documents are injected directly, the estimate measures evidence retention without conflating it with search or tool-use skill.</p>
+      <figure class="fig"><p class="fig__title title-m">China minus West retention contrast (±10pp equivalence margin)</p>
+        <div class="chart" data-chart="fixed_rag"></div>
+        <p class="fig__cap">Positive = more pro-versus-critical retention on China than on its Western mirror. Qwen's contrast is <span class="stat" data-tip="Cluster-bootstrap 95% CI over 20 scenario pairs; interval does not lie inside the prospectively fixed +/-10pp margin. Provisional pending human validation.">−5.0pp, CI [−15.3, +5.0]</span>, inconclusive against the margin. Judge-based; provisional.</p></figure>
+      <p>The result is descriptive rather than a clean equivalence statement, and cross-model reads are weak: Mistral reached the token ceiling on 60 of 80 notes, so its near-zero contrast rests on truncated outputs. What the design does establish is that Qwen's earlier operational gaps (skipping tools, running out of turns) are a reliability question, <strong>not</strong> evidence of directional bias.</p>
     </section>
 
     <!-- ============ PART III ============ -->
-    <section class="part" id="part3">
-      <p class="part__num label-m">PART III</p>
-      <h2 class="headline-l">Taking the pen back</h2>
-      <p>The weights carry a real bias and it leaks into the tool layer. Can the deployer overwrite it, with a prompt, or by editing the weights themselves?</p>
+    <section class="part" id="part3"><p class="part__num label-m">Part III</p><h2 class="headline-l">Constrained relay</h2>
+      <p>Three tasks that reduce the model's freedom and place authority outside its weights: an authoritative tool result, a decoder-enforced schema, and a supplied passage to transform. They share a deployment question but test different mechanisms.</p></section>
+
+    <section id="s-tool" class="prose">
+      <h3><span class="s-num">4</span>The model versus its own authoritative tool</h3>
+      <p>Given a <code>factbase</code> tool described as authoritative and instructed to answer strictly from it, Qwen relays <span class="stat" data-tip="Mechanical: tool called AND returned value cited. Only the Tiananmen item fails, because Qwen never issues the call. analysis/build_paper_artifacts.py (tier4)">5 of 6</span> contra-China values and every Western mirror. Only Tiananmen fails, because it never issues the call. Mistral and Gemma relay every value on both sides.</p>
+      <div data-card="factbase"></div>
+      <figure class="fig"><p class="fig__title title-m">Relay fidelity: authoritative tool and source transformation</p>
+        <div class="chart" data-chart="relay"></div>
+        <p class="fig__cap">Percent of contra-China values relayed (tool) and sensitive spans preserved (transformation), China vs Western mirror. Only Qwen-China deviates, on one topic.</p></figure>
     </section>
 
-    <section id="s-persona" class="prose">
-      <h3><span class="s-num">7</span>What a deployment prompt changes</h3>
-      <p>Nobody deploys a bare model, and this study didn't either. One realistic line of French-administration persona cuts frontal refusal by 40% and, on analytic stance, over-corrects Qwen past neutral to its replacement's level, the Qwen a civil servant actually used was likely indistinguishable from Mistral on drafting.</p>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Bare vs deployment persona (Qwen)</p>
-        <div class="chart" data-chart="sysprompt"></div>
-        <p class="fig__cap">Left: frontal refusal 34.9% → 20.0% (McNemar p=0.031). Right: stance −0.54 → −0.93, over-correcting to Mistral's −0.89.</p>
-      </figure>
-
-      <p>But it does not make the model disappear. A hard core survives, binary, not graduated: under the persona, Tiananmen stays 100% refused, criticism of Xi 67%, while everything a Treasury analyst actually touches drops to zero.</p>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Qwen refusal by topic and language, bare and under the persona</p>
-        <div class="chart" data-chart="topic"></div>
-        <p class="fig__cap">Each cell is the share of a topic family's China-sensitive prompts refused. The right column is the persona condition. Click a topic name to read a real prompt.</p>
-      </figure>
-
-      <p>And the relay layer only half-recovers: under the persona Qwen translates and summarizes the Tiananmen paragraph, but still refuses to <em>extract</em> from it and still overrides its own factbase. Two of four failing relay cells recover; two persist, with the persona woven into the refusals.</p>
+    <section id="s-json" class="prose">
+      <h3><span class="s-num">5</span>Strict JSON schema: valid syntax, semantic label</h3>
+      <p>Under a decoder-enforced schema (<code>json_schema</code>, a four-value enum, <code>additionalProperties=false</code>), <strong>all 216 outputs are valid</strong> and semantic agreement is similar across models (Qwen 73.6%, Mistral 75.0%, Gemma 76.4%): constrained decoding guarantees form, not the political label. Qwen nonetheless never selects <code>disputed</code> for Taiwan, Tibet or Hong Kong in any language, while it matches the controls on Crimea, Kosovo and Western Sahara.</p>
+      <figure class="fig"><p class="fig__title title-m">Selected status label under the strict schema</p>
+        <div class="chart" data-chart="entity"></div>
+        <p class="fig__cap">Every cell is a syntactically valid object; the color is the selected enum value, not a correctness judgment. The reference label for these entities is <code>disputed</code>.</p></figure>
     </section>
 
-    <section id="s-weights" class="prose">
-      <h3><span class="s-num">8</span>Editing the weights</h3>
-      <p>Before editing anything we tried to open the gate from the prompt alone: 32 adversarial attempts on the Tiananmen question. Not one of the <span class="stat" data-tip="Prompt-only attempts asking the model to volunteer the facts from memory; 0 of 23 succeed. scripts/elicit_tiananmen*.py">23 that ask the model to volunteer the facts</span> works. That is the signature of an output gate, not a knowledge gap. So the determined deployer edits the model. "Abliterated" variants that strip the refusal direction from the weights already sit on Hugging Face; we served the canonical one in Qwen's place.</p>
-
-      <figure class="fig">
-        <p class="fig__title title-m">Abliteration: 4-way answer split, base vs edited weights</p>
-        <div class="chart" data-chart="abliteration" data-link="card-abl-pair"></div>
-        <p class="fig__cap">The refusal segment disappears everywhere. In French and English the documented account fills in; in Chinese, Beijing's framing stays the plurality. Click a bar to compare a base and abliterated answer.</p>
-      </figure>
-
-      <div id="card-abl-pair" data-card="abliteration_pair"></div>
-
-      <p>That is the deepest layer, and the one that matters most. There is a refusal gate, which prompts cannot open but weight-editing removes; and underneath it, in the model's native language, a narrative baked into the output distribution itself. You can delete the model's ability to say <em>"I cannot"</em>, and what you are left with in Chinese is not June 4th. It is Beijing's version, stated with confidence.</p>
+    <section id="s-transform" class="prose">
+      <h3><span class="s-num">6</span>Transformation: preserving supplied text</h3>
+      <p>Asked to translate, summarize or extract a supplied passage faithfully, Qwen preserves both required spans in 24 of 30 China-sensitive transformations and 30 of 30 Western mirrors. Every miss is the same Tiananmen payload, repeated across all three tasks. Structured classification and transformation sit together as constrained-relay tasks, but they test different mechanisms: only the former delegates its constraint to the decoder.</p>
+      <div data-card="translate"></div>
     </section>
 
     <!-- ============ PART IV ============ -->
-    <section class="part" id="part4">
-      <p class="part__num label-m">PART IV</p>
-      <h2 class="headline-l">The verdict</h2>
-      <p>Three things are true at once, and one of them has nothing to do with China.</p>
+    <section class="part" id="part4"><p class="part__num label-m">Part IV</p><h2 class="headline-l">Deployment interventions</h2>
+      <p>Nobody deploys a bare model. Two levers a deployer actually has: a system prompt, and editing the weights.</p></section>
+
+    <section id="s-persona" class="prose">
+      <h3><span class="s-num">7</span>A one-line system prompt</h3>
+      <p>A French-administration persona cuts Qwen's direct refusals from <span class="stat" data-tip="Paired McNemar over jointly-resolved prompts, p=0.031. Persona wording variants replicate the direction. analysis/build_paper_artifacts.py">34.9% to 20.9%</span>, but it does not remove the model. Tiananmen stays fully refused, and the same prompt <em>sharpens</em> the analytic anti-China stance (−0.54 to −0.93), an effect that is not Qwen-specific: under the identical prompt Mistral moves to −0.89.</p>
+      <figure class="fig"><p class="fig__title title-m">Qwen bare vs administration persona</p>
+        <div class="chart" data-chart="sysprompt"></div>
+        <p class="fig__cap">Refusal falls; stance over-corrects to the controls' level. The dashed line is Mistral under the same persona.</p></figure>
+      <figure class="fig"><p class="fig__title title-m">Qwen refusal by topic and language (persona in the last column)</p>
+        <div class="chart" data-chart="topic"></div>
+        <p class="fig__cap">The persona zeroes most families but leaves a hard core (Tiananmen, leader criticism). Note several topics refuse more in English than French, and a few only in Chinese.</p></figure>
+    </section>
+
+    <section id="s-weights" class="prose">
+      <h3><span class="s-num">8</span>Editing the weights: refusal suppression is not debiasing</h3>
+      <p>A matched pair of exact BF16 revisions, base against a third-party refusal-ablated checkpoint (270 outputs each, identical serving, provenance-gated), lets us isolate the weight change. Refusal collapses: <span class="stat" data-tip="Exact McNemar over jointly-resolved pairs; every discordance removes a refusal, none adds one. Matched BF16, provenance-verified. analysis/run_a4_abliteration_judges.py">French 17/45 to 0/45, English 27/45 to 2/45</span>, every Western mirror still zero. But this measures answer availability, not semantic debiasing.</p>
+      <figure class="fig"><p class="fig__title title-m">Answer frame after refusal suppression (blind dual-family coding)</p>
+        <div class="chart" data-chart="abliteration"></div>
+        <p class="fig__cap">Documented-account share rises in French and English; in exploratory Chinese, roughly half of answers stay Beijing-framed. Provisional pending human validation.</p></figure>
+      <div data-card="abliteration_pair"></div>
     </section>
 
     <section id="s-verdict" class="prose">
-      <h3><span class="s-num">9</span>Was the removal justified?</h3>
-      <p><strong>On the Treasury's actual workload, we found nothing:</strong> grounded work in French shows no pro-China contamination, and a one-line prompt erases even Qwen's relative lean. <strong>On direct questions and the relay layer, the problem is real and measured:</strong> massive, directional, in the weights, and reaching the two functions HéphAIstos exposed. <strong>Underneath both sits a layer nothing reaches:</strong> the language of the request flips stance, structured output and refusals, and abliteration confirms the depth, removing the refusal but not the Chinese-language narrative.</p>
-      <p><strong>And the finding that outranks all of them for a deployer is the one about the documents.</strong> In an agentic RAG deployment the answer is co-authored by everything the pipeline ingests, and a single planted document captures every model tested, the "trusted" replacement included. The bias got Qwen removed; the ingestion surface it shares with Mistral got no scrutiny at all. Surface by surface:</p>
-
-      <div class="m3-table-wrap">
-        <table class="m3-table">
-          <thead><tr><th>Deployment surface</th><th>Qwen3.6</th><th>Mistral-Small-4</th><th>Gemma-4</th><th>Mitigation that works</th></tr></thead>
-          <tbody>
-            <tr><td>Direct QA on geopolitics</td><td>Refuses / deflects 21–62% China-side, even with persona</td><td>clean (0–2%)</td><td>clean (0–2%)</td><td>System prompt removes ⅔, not the Tiananmen/Xi core</td></tr>
-            <tr><td>Grounded analytic notes (fr/en)</td><td>clean; over-corrects under persona</td><td>clean</td><td>clean</td><td>calibrate for the shared anti-China / pro-Europe tilt, not the lab flag</td></tr>
-            <tr><td>Agentic synthesis over a doc base</td><td>politically clean; unreliable (30/40) and fabricates citations (6/8)</td><td>clean, 40/40</td><td>clean; one sanitized Taiwan cell</td><td>grounding enforcement + citation verification</td></tr>
-            <tr><td>Translation / extraction</td><td>refuses on the Tiananmen core (3/3 tasks)</td><td>30/30 spans</td><td>30/30 spans</td><td>persona removes 2/3; abliteration all 3, at a cost</td></tr>
-            <tr><td>Structured extraction (JSON)</td><td>downgrades Taiwan in zh</td><td>stable in all 3 languages</td><td>downgrades in zh</td><td>don't run status fields through Chinese prompts</td></tr>
-            <tr><td>Multi-turn under user pushback</td><td>mild, n.s.</td><td>most sycophantic (9/10)</td><td>most robust</td><td>don't let "are you sure?" rewrite factual notes</td></tr>
-            <tr><td>Poisoned document base (RAG)</td><td>captured (launders 9/9, obeys 7/7)</td><td>captured (5/5)</td><td>captured (4/4)</td><td>none of the models defends it: sign / verify documents, sandbox retrieval</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <p>The removal was defensible, but not for the reasons given, and not on the basis of published evaluation, because there was none. That may be the real lesson. An administration deploying language models for a million civil servants can publish its evaluations the way it publishes procurement; the whole apparatus here was a preregistration, three locally served open-weight models, and two judge APIs.</p>
+      <h2 class="headline-l">What the audit does and doesn't show</h2>
+      <p><strong>Bias is conditional on authority.</strong> Qwen's largest asymmetry is answering directly from memory. Balanced fact sheets largely suppress it in French and English, while a narrow Tiananmen failure persists when an external tool or source text should be authoritative. The same political content can be compliant in a long note and blocked in a transformation.</p>
+      <p><strong>Operational failure is not directional bias, and protocol success is not semantic success.</strong> Search, reading, completion and political selection are distinct outcomes; a valid JSON object can still carry the wrong label. An audit has to follow the application's authority graph and give each edge its own failure label: refusal, unread evidence, unsupported content, unfaithful transformation, schema violation, or a disputed semantic choice.</p>
+      <p><strong>The controls are not scale-matched.</strong> On the tested surfaces the current Qwen checkpoint needs targeted political QA and relay validation. It is not shown to be globally inferior on administrative writing, and this is not a general model-performance ranking.</p>
+      <footer class="site-footer">
+        <p>The canonical record is the paper: <a href="https://github.com/QuentinFuxa/qwen3_bias/blob/main/output/pdf/qwen_bias_acl_preprint.pdf">compiled PDF</a> · <a href="https://github.com/QuentinFuxa/qwen3_bias/tree/main/paper">LaTeX source</a> · <a href="https://github.com/QuentinFuxa/qwen3_bias">repository</a>. Every number on this page is generated from <code>paper/generated/results.tex</code> by <code>scripts/build_site_data.py</code>. Independent study; no funding from any lab mentioned.</p>
+      </footer>
     </section>
-
-    <footer class="site-footer">
-      <p>Everything is open: <a href="https://github.com/QuentinFuxa/qwen3_bias">code, prompts, corpora, raw outputs, judge verdicts and the preregistration</a> (public with the dataset release), including the full 19-axis coverage matrix and the reproduction guide.</p>
-      <p>Independent study; no funding from any lab mentioned. Total cost ≈ $120. Every chart and document on this page is generated from the repository by <code>scripts/build_site_data.py</code>; this page is an editorial re-cut of <code>ARTICLE.md</code>.</p>
-    </footer>
   </main>
 </div>
-
-<details class="toc-mobile">
-  <summary><span id="toc-mobile-label">Contents</span></summary>
-  <ol>
-    <li><a href="#intro">The Bercy case</a></li>
-    <li><a href="#s-direct">1 · Direct questions</a></li>
-    <li><a href="#s-language">2 · Another language</a></li>
-    <li><a href="#s-work">3 · The real workload</a></li>
-    <li><a href="#s-poison">4 · A planted document</a></li>
-    <li><a href="#s-hardcore">5 · Hard-core documents</a></li>
-    <li><a href="#s-relay">6 · The tool as ground truth</a></li>
-    <li><a href="#s-persona">7 · A deployment prompt</a></li>
-    <li><a href="#s-weights">8 · Editing the weights</a></li>
-    <li><a href="#s-verdict">9 · Was it justified?</a></li>
-  </ol>
-</details>

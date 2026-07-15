@@ -330,7 +330,35 @@
     if (onClick) mount.appendChild(hint("Click a bar to compare a base vs abliterated answer."));
   }
 
-  var RENDER = { refusal: refusal, p7: p7, relay: relay, sysprompt: sysprompt, entity: entity, abliteration: abliteration };
+  // ---- fixed retrieval: China - West retention contrast, +/-10pp margin band ----
+  function fixedRag(mount, d) {
+    var models = d.models, W = 680, rowH = 42, padL = 92, padR = 24, padT = 30;
+    var H = padT + models.length * rowH + 20, lo = -18, hi = 18;
+    function X(v) { return padL + (v - lo) / (hi - lo) * (W - padL - padR); }
+    var root = svgRoot(W, H);
+    root.appendChild(s("rect", { x: X(-d.marginPp), y: padT - 6, width: X(d.marginPp) - X(-d.marginPp),
+      height: H - padT - 8, style: "fill:var(--outline-variant);opacity:.3" }));
+    root.appendChild(s("line", { class: "axis", x1: X(0), y1: padT - 6, x2: X(0), y2: H - 8, style: "stroke:var(--outline)" }));
+    root.appendChild(s("text", { x: X(0), y: 14, "text-anchor": "middle", "font-size": 10, class: "lbl", text: "0 (no China/West gap)" }));
+    [-10, 0, 10].forEach(function (t) {
+      root.appendChild(s("text", { x: X(t), y: H - 2, "text-anchor": "middle", "font-size": 10, class: "lbl", text: (t > 0 ? "+" : "") + t + "pp" })); });
+    models.forEach(function (c, i) {
+      var y = padT + i * rowH + rowH / 2;
+      root.appendChild(s("text", { x: padL - 12, y: y + 4, "text-anchor": "end", "font-size": 12, class: "val", text: MNAME[c.model] }));
+      root.appendChild(s("line", { x1: X(c.lo), y1: y, x2: X(c.hi), y2: y, style: "stroke:" + FILL[c.model] + ";stroke-width:2;opacity:.5" }));
+      ["lo", "hi"].forEach(function (k) { root.appendChild(s("line", { x1: X(c[k]), y1: y - 4, x2: X(c[k]), y2: y + 4, style: "stroke:" + FILL[c.model] + ";stroke-width:2;opacity:.5" })); });
+      var dot = s("circle", { cx: X(c.v), cy: y, r: 6, style: "fill:" + FILL[c.model] + ";cursor:pointer" });
+      bind(dot, "<b>" + MNAME[c.model] + "</b><br>China − West retention: " + c.v.toFixed(1) + "pp<br>95% CI " +
+        c.lo.toFixed(1) + " to " + c.hi.toFixed(1) + "pp<br><i>fixed retrieval · provisional</i>");
+      root.appendChild(dot);
+      root.appendChild(s("text", { x: X(c.v), y: y - 9, "text-anchor": "middle", "font-size": 11, class: "val", text: (c.v > 0 ? "+" : "") + c.v.toFixed(1) }));
+    });
+    root.setAttribute("aria-label", "Fixed-retrieval China minus West retention contrast; Qwen -5pp, inconclusive against the +/-10pp margin.");
+    mount.appendChild(root);
+    mount.appendChild(hint("Shaded band = ±10pp equivalence margin. An interval crossing it is inconclusive."));
+  }
+
+  var RENDER = { refusal: refusal, relay: relay, sysprompt: sysprompt, entity: entity, abliteration: abliteration };
 
   window.Charts = {
     render: function (data, handlers) {
@@ -344,11 +372,11 @@
             { showLang: false, aria: "Stance deltas on identical French evidence: Qwen -0.54, Mistral -0.75, Gemma -0.75, all harsher on China than on the West." }, handlers);
           else if (kind === "stance_lang") { var cells = []; c.stance_lang.forEach(function (m) { m.cells.forEach(function (cl) { cells.push(Object.assign({ model: m.model }, cl)); }); });
             dotplot(mount, cells, { showLang: true, aria: "Stance by language: only Qwen crosses zero, and only in Chinese (+0.30)." }, handlers); }
-          else if (kind === "p7") p7(mount, c.p7, handlers);
+          else if (kind === "fixed_rag") fixedRag(mount, c.fixed_rag);
           else if (kind === "relay") relay(mount, c.relay, handlers);
           else if (kind === "sysprompt") sysprompt(mount, c.sysprompt, handlers);
           else if (kind === "topic") heatmap(mount, c.topic, handlers, data.topic_prompts);
-          else if (kind === "entity") entity(mount, c.entity);
+          else if (kind === "entity") entity(mount, c.entity_json);
           else if (kind === "abliteration") abliteration(mount, c.abliteration, handlers);
         } catch (e) { mount.textContent = "chart unavailable"; }
       });

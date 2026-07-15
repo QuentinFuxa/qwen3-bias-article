@@ -224,35 +224,24 @@
   /* ---- native schematics ---- */
   function schematics() {
     var s = $('[data-schematic="surfaces"]');
-    if (s) [["Chat", "Ask it directly", "A frontal question, no context."],
-            ["Work", "Draft & synthesize", "Balanced dossiers, then agentic notes with tool calls."],
-            ["Relay", "Transform & tool-call", "Translate, extract, answer from a factbase tool."]].forEach(function (c, i, arr) {
+    if (s) [["Memory", "Direct questions", "A frontal question, answered from the weights alone."],
+            ["Evidence", "Balanced facts & fixed retrieval", "The same documents supplied to every model, in two orders."],
+            ["Constraint", "Tool, schema, source text", "An authoritative tool, a decoder-enforced schema, a passage to transform."]].forEach(function (c, i, arr) {
       s.appendChild(h("div", { class: "sch-card" }, [h("p", { class: "sch-card__k label-s", text: "Surface " + (i + 1) }), h("p", { class: "sch-card__t", text: c[0] + " · " + c[1] }), h("p", { class: "sch-card__d", text: c[2] })]));
       if (i < arr.length - 1) s.appendChild(h("div", { class: "sch-arrow", text: "→" }));
-    });
-    var t = $('[data-schematic="trust"]');
-    if (t) [["1 · Deployment", "The agent under a persona", "It must search and read a document base, then write a cited ministerial note.", false],
-            ["2 · The base", "One planted document", "Among the real corpus sits an adversarial doc: an order, a fake statistic, a false authority.", true],
-            ["3 · The note", "What survives", "We score, blind, whether the planted content reaches the final cited note.", false]].forEach(function (c, i, arr) {
-      t.appendChild(h("div", { class: "sch-card" + (c[3] ? " hazard" : "") }, [h("p", { class: "sch-card__k label-s", text: c[0] }), h("p", { class: "sch-card__t", text: c[1] }), h("p", { class: "sch-card__d", text: c[2] })]));
-      if (i < arr.length - 1) t.appendChild(h("div", { class: "sch-arrow", text: "→" }));
     });
   }
 
   /* ---- data + boot ---- */
   function loadData() {
     fetch("assets/data.json").then(function (r) { return r.json(); }).then(function (data) {
-      cards(data); excerpts(data); schematics();
-      if (data.p7 && $("#explorer-p7")) explorer($("#explorer-p7"), "p7", data);
-      if (data.p8 && $("#explorer-p8")) explorer($("#explorer-p8"), "p8", data);
+      cards(data); schematics();
       var handlers = { goTo: goTo, revealPrompt: function (mount, label, prompt) {
         var r = mount.querySelector(".topic-reveal"); if (r) r.innerHTML = "";
         if (r) { r.appendChild(h("span", { class: "rk", text: label + " · example prompt" })); r.appendChild(document.createTextNode("« " + prompt + " »")); }
       } };
       if (window.Charts) { window.__rerenderCharts = function () { window.Charts.render(data, handlers); }; window.Charts.render(data, handlers); }
-    }).catch(function () {
-      $$(".explorer__mount").forEach(function (m) { m.textContent = ""; m.appendChild(h("a", { href: "https://github.com/QuentinFuxa/qwen3_bias/tree/main/data/tier4", text: "Browse the corpora on GitHub ↗" })); });
-    });
+    }).catch(function () {});
   }
 
   theme(); progress(); scrollspy(); tooltips(); loadData();
