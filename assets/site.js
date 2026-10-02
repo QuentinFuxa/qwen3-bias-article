@@ -93,16 +93,16 @@
   function respCard(o) {
     var kids = [h("div", { class: "resp__head" }, [
       h("span", { class: "resp__dot" }),
-      h("span", { class: "resp__model", text: o.model ? CAP(o.model) : o.title }),
+      h("span", { class: "resp__model", text: o.title || (o.model ? CAP(o.model) : "") }),
       o.gloss ? h("span", { class: "resp__gloss", text: o.gloss }) : null
     ])];
     if (o.q) kids.push(h("div", { class: "resp__q", text: o.q }));
     var body = h("div", { class: "resp__body", lang: o.lang || "fr", text: o.text });
     kids.push(body);
     if (o.truncated) {
-      var more = h("button", { class: "resp__more", type: "button", text: "Show full answer ↓" });
+      var more = h("button", { class: "resp__more", type: "button", text: "Expand excerpt ↓" });
       var open = false; body.style.maxHeight = "8.5em"; body.style.overflow = "hidden";
-      more.addEventListener("click", function () { open = !open; body.style.maxHeight = open ? "none" : "8.5em"; more.textContent = open ? "Show less ↑" : "Show full answer ↓"; });
+      more.addEventListener("click", function () { open = !open; body.style.maxHeight = open ? "none" : "8.5em"; more.textContent = open ? "Collapse excerpt ↑" : "Expand excerpt ↓"; });
       kids.push(more);
     }
     if (o.foot) kids.push(h("div", { class: "resp__foot", text: o.foot }));
@@ -136,7 +136,7 @@
     var tr = $('[data-card="translate"]');
     if (tr && C.translate) {
       tr.appendChild(h("div", { class: "resp", style: "margin-bottom:14px" }, [
-        h("div", { class: "resp__head" }, [h("span", { class: "resp__model", text: "Payload to translate" })]),
+        h("div", { class: "resp__head" }, [h("span", { class: "resp__model", text: "Source passage to translate" })]),
         h("div", { class: "resp__body", lang: "en", text: C.translate.payload })
       ]));
       tr.appendChild(h("div", { class: "responses cols-3" }, C.translate.answers.map(function (a) { return respCard(a); })));
@@ -146,8 +146,8 @@
     if (ap && C.abliteration_pair) {
       ap.appendChild(h("p", { class: "resp__q", style: "padding:0 0 6px", text: C.abliteration_pair.q }));
       ap.appendChild(h("div", { class: "responses cols-2" }, [
-        respCard({ model: "qwen", title: C.abliteration_pair.base.label, gloss: "before", text: C.abliteration_pair.base.text, lang: "en" }),
-        respCard({ model: "gemma", title: C.abliteration_pair.abliterated.label, gloss: "after", text: C.abliteration_pair.abliterated.text, lang: "en" })
+        respCard({ model: "qwen", title: "Qwen · original weights", gloss: "", text: C.abliteration_pair.base.text, lang: "en" }),
+        respCard({ model: "qwen", title: "Qwen · modified weights", gloss: "", text: C.abliteration_pair.abliterated.text, lang: "en" })
       ]));
     }
   }
@@ -165,8 +165,8 @@
       var body = h("div", { class: "resp__body", lang: "fr", text: e.text });
       body.style.maxHeight = "10em"; body.style.overflow = "hidden"; slot.appendChild(body);
       if (e.truncated) {
-        var more = h("button", { class: "resp__more", type: "button", text: "Show full note ↓" });
-        var op = false; more.addEventListener("click", function () { op = !op; body.style.maxHeight = op ? "none" : "10em"; more.textContent = op ? "Show less ↑" : "Show full note ↓"; });
+        var more = h("button", { class: "resp__more", type: "button", text: "Expand excerpt ↓" });
+        var op = false; more.addEventListener("click", function () { op = !op; body.style.maxHeight = op ? "none" : "10em"; more.textContent = op ? "Collapse excerpt ↑" : "Expand excerpt ↓"; });
         slot.appendChild(more);
       }
       slot.appendChild(h("div", { class: "resp__foot", text: "Documents opened: " + opened + " · Tool calls: " + e.tool_calls + " · " + e.note }));
@@ -224,10 +224,10 @@
   /* ---- native schematics ---- */
   function schematics() {
     var s = $('[data-schematic="surfaces"]');
-    if (s) [["Memory", "Direct questions", "A frontal question, answered from the weights alone."],
-            ["Evidence", "Balanced facts & fixed retrieval", "The same documents supplied to every model, in two orders."],
-            ["Constraint", "Tool, schema, source text", "An authoritative tool, a decoder-enforced schema, a passage to transform."]].forEach(function (c, i, arr) {
-      s.appendChild(h("div", { class: "sch-card" }, [h("p", { class: "sch-card__k label-s", text: "Surface " + (i + 1) }), h("p", { class: "sch-card__t", text: c[0] + " · " + c[1] }), h("p", { class: "sch-card__d", text: c[2] })]));
+    if (s) [["Questions", "No reference material", "Answer a political question without supplied facts or documents."],
+            ["Writing", "Supplied evidence", "Draft a note from balanced facts or a complete set of documents."],
+            ["Instructions", "Tools, labels and translation", "Report a tool result, choose a status label or preserve a source passage."]].forEach(function (c, i, arr) {
+      s.appendChild(h("div", { class: "sch-card" }, [h("p", { class: "sch-card__k label-s", text: "Task group " + (i + 1) }), h("p", { class: "sch-card__t", text: c[0] + " · " + c[1] }), h("p", { class: "sch-card__d", text: c[2] })]));
       if (i < arr.length - 1) s.appendChild(h("div", { class: "sch-arrow", text: "→" }));
     });
   }

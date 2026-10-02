@@ -1,13 +1,18 @@
-# France unplugged Qwen for bias. Nobody published the evidence. So we measured it.
+# Testing Qwen's political bias
 
-A preregistered audit of geopolitical bias in three open-weight LLMs (Qwen3.6,
-Mistral-Small-4, Gemma-4), across nineteen axes, from frontal questions to tool-use,
-translation, RAG and adversarial document-base probes.
+This repository hosts the article at
+[quentinfuxa.github.io/qwen3-bias-article](https://quentinfuxa.github.io/qwen3-bias-article/).
 
-**Read the article: https://quentinfuxa.github.io/qwen3-bias-article/**
+The article covers the July 2026 study snapshot `a28fc8b`: direct questions,
+writing from supplied facts, document retention, tool use, structured labels,
+text transformation, and prompt and weight interventions. Its main question
+is whether the China/West refusal gap also appears in these other tasks.
 
-This repository hosts the article website only. The full study (code, prompts,
-corpora, raw generations, judge verdicts and the preregistration) will be released
-alongside the dataset.
+The study source is in [qwen3_bias](https://github.com/QuentinFuxa/qwen3_bias).
+Chart data and response excerpts in `assets/data.json` are generated study
+artifacts. Editorial copy lives in `index.html`, `assets/site.js` and
+`assets/charts.js`; quoted model responses must remain unchanged.
 
-Independent study; no funding from any lab mentioned.
+GitHub Pages publishes the root of this repository's `main` branch.
+
+Independent study, with no funding from the labs mentioned.

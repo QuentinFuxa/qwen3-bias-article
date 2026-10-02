@@ -89,7 +89,7 @@
     });
     root.appendChild(s("line", { class: "axis", x1: padL, y1: padT + plotH, x2: W - 6, y2: padT + plotH }));
     root.setAttribute("aria-label", "Refusal rate on China-sensitive questions: Qwen 33% French, 53% English, 62% Chinese; Mistral and Gemma near zero; Western mirrors zero for all.");
-    mount.appendChild(legend(langs.map(function (l, i) { return { label: l, color: "color-mix(in srgb, var(--on-surface-variant) " + (30 + i * 30) + "%, var(--qwen))" }; })));
+    mount.appendChild(legend(langs.map(function (l, i) { return { label: l === "Chinese" ? "Chinese*" : l, color: "color-mix(in srgb, var(--on-surface-variant) " + (30 + i * 30) + "%, var(--qwen))" }; })));
     mount.appendChild(root);
     if (onClick) mount.appendChild(hint("Click a Qwen bar to see the verbatim answers."));
   }
@@ -105,7 +105,7 @@
     var root = svgRoot(W, H);
     // zero line + critical/pro labels
     root.appendChild(s("line", { class: "axis", x1: X(0), y1: padT - 8, x2: X(0), y2: H - 8, style: "stroke:var(--outline)" }));
-    root.appendChild(s("text", { x: X(0), y: 14, "text-anchor": "middle", "font-size": 10, class: "lbl", text: "0 (balanced)" }));
+    root.appendChild(s("text", { x: X(0), y: 14, "text-anchor": "middle", "font-size": 10, class: "lbl", text: "0 (equal scores)" }));
     [-1, -0.5, 0].forEach(function (t) {
       root.appendChild(s("text", { x: X(t), y: H - 2, "text-anchor": "middle", "font-size": 10, class: "lbl", text: t }));
     });
@@ -126,7 +126,6 @@
     });
     root.setAttribute("aria-label", opts.aria);
     mount.appendChild(root);
-    mount.appendChild(hint(opts.showLang ? "Only Qwen crosses zero, and only in Chinese." : "Negative = harsher on China than on the West, on identical evidence."));
   }
 
   // ---- p7 capture grouped bars + exposure ----
@@ -183,7 +182,7 @@
     var onClick = goLink(mount, handlers);
     rows.forEach(function (r0, gi) {
       var gx = padL + gi * groupW + 14;
-      [["relayC", "Factbase relayed (P1)", "5/6", "6/6"], ["spanC", "Spans preserved (P3)", "24/30", "30/30"]].forEach(function (mt, mi) {
+      [["relayC", "Tool value reported", "5/6", "6/6"], ["spanC", "Required content preserved", "24/30", "30/30"]].forEach(function (mt, mi) {
         var pct = r0[mt[0]], x = gx + mi * (barW + 10), bh = plotH * pct / 100, y = padT + plotH - bh;
         var counts = r0.model === "qwen" ? mt[2] : mt[3];
         var rect = s("rect", { class: "bar", x: x, y: y, width: barW, height: bh, rx: 4,
@@ -197,10 +196,10 @@
       root.appendChild(s("text", { x: gx + barW + 5, y: H - padB + 18, "text-anchor": "middle", "font-size": 12, "font-weight": 600, class: "lbl", style: "fill:" + FILL[r0.model], text: MNAME[r0.model] }));
     });
     root.appendChild(s("line", { class: "axis", x1: padL, y1: padT + plotH, x2: W - 6, y2: padT + plotH }));
-    root.setAttribute("aria-label", "Relay layer: only Qwen deviates on the China side (factbase 5 of 6, spans 24 of 30); Mistral and Gemma are perfect on both sides.");
-    mount.appendChild(legend([{ label: "P1 factbase relay", color: "var(--qwen)" }, { label: "P3 span preservation", color: "color-mix(in srgb, var(--qwen) 60%, transparent)" }]));
+    root.setAttribute("aria-label", "On China-sensitive items, Qwen reports 5 of 6 tool values and preserves required content in 24 of 30 transformations. Mistral and Gemma succeed on every item. All Western counterparts succeed.");
+    mount.appendChild(legend([{ label: "Tool value reported", color: "var(--qwen)" }, { label: "Required content preserved", color: "color-mix(in srgb, var(--qwen) 60%, transparent)" }]));
     mount.appendChild(root);
-    if (onClick) mount.appendChild(hint("Click a Qwen bar to see the factbase and translation exhibits."));
+    if (onClick) mount.appendChild(hint("Tool use and translation examples appear next to this chart."));
   }
 
   // ---- sysprompt before/after (refusal + stance) ----
@@ -224,24 +223,23 @@
       });
     }
     var r = d.refusal, st = d.stance;
-    panel(20, 300, "Frontal refusal (China, fr)", [
-      { k: "Bare", v: r.bare, desc: r.bare + "% (CI " + r.bareLo + "–" + r.bareHi + ")" },
-      { k: "+ persona", v: r.admin, desc: r.admin + "% (CI " + r.adminLo + "–" + r.adminHi + "), McNemar p=0.031" }
+    panel(20, 300, "Refusal (China, French)", [
+      { k: "No role", v: r.bare, desc: r.bare + "% (CI " + r.bareLo + "–" + r.bareHi + ")" },
+      { k: "Admin role", v: r.admin, desc: r.admin + "% (CI " + r.adminLo + "–" + r.adminHi + "), McNemar p=0.031" }
     ], function (v) { return v.toFixed(1) + "%"; }, [0, 50]);
-    panel(360, 300, "Analytic stance", [
-      { k: "Bare", v: -st.bare, desc: st.bare.toFixed(2) + " (CI " + st.bareLo + "–" + st.bareHi + ")" },
-      { k: "+ persona", v: -st.admin, desc: st.admin.toFixed(2) + " (CI " + st.adminLo + "–" + st.adminHi + "), over-corrects to Mistral's " + st.mistralAdmin }
+    panel(360, 300, "China − West score", [
+      { k: "No role", v: -st.bare, desc: st.bare.toFixed(2) + " (CI " + st.bareLo + "–" + st.bareHi + ")" },
+      { k: "Admin role", v: -st.admin, desc: st.admin.toFixed(2) + " (CI " + st.adminLo + "–" + st.adminHi + "), compared with Mistral's " + st.mistralAdmin + " under the same role" }
     ], function (v) { return (-v).toFixed(2); }, [0, 1.2]);
     root.appendChild(s("line", { class: "axis", x1: 20, y1: padT + plotH, x2: 320, y2: padT + plotH }));
     root.appendChild(s("line", { class: "axis", x1: 360, y1: padT + plotH, x2: 660, y2: padT + plotH }));
-    root.setAttribute("aria-label", "A deployment persona cuts frontal refusal from 34.9% to 20.0%, and over-corrects the analytic stance from -0.54 to -0.93, landing at Mistral's level.");
+    root.setAttribute("aria-label", "The administrative role reduces refusal from 34.9% to 20.9% on paired French questions. The China-minus-West score changes from -0.54 to -0.93.");
     mount.appendChild(root);
-    mount.appendChild(hint("The prompt shrinks the visible bias, but over-corrects the stance."));
   }
 
   // ---- topic heatmap ----
   function heatmap(mount, rows, handlers, prompts) {
-    var cols = [["fr", "FR"], ["en", "EN"], ["zh", "ZH"], ["persona", "FR·persona"]];
+    var cols = [["fr", "FR"], ["en", "EN"], ["zh", "ZH*"], ["persona", "FR·role"]];
     var W = 680, rowH = 26, padL = 150, padT = 30, cw = (W - padL - 10) / cols.length;
     var H = padT + rows.length * rowH + 10;
     var root = svgRoot(W, H);
@@ -295,13 +293,12 @@
       wrap.appendChild(row);
     });
     mount.appendChild(wrap);
-    mount.appendChild(hint("Everyone says “disputed”, except Qwen (region) and Gemma (territory) for Taiwan in Chinese."));
     function cell(t, cls) { var d = document.createElement("div"); d.className = cls; d.textContent = t; return d; }
   }
 
   // ---- abliteration 100% stacked ----
   function abliteration(mount, rows, handlers) {
-    var W = 680, H = 300, padL = 96, padT = 14, padB = 30, plotW = W - padL - 90;
+    var W = 680, H = 300, padL = 132, padT = 14, padB = 30, plotW = W - padL - 90;
     var barH = 26, gap = 12, y0 = padT;
     var root = svgRoot(W, H);
     var segs = [["documented", "Documented account", "var(--pos)"], ["neutral", "Neutral", "var(--outline)"],
@@ -310,7 +307,7 @@
     rows.forEach(function (r0, i) {
       var y = y0 + i * (barH + gap) + (i >= 2 ? 6 : 0) + (i >= 4 ? 6 : 0);
       root.appendChild(s("text", { x: padL - 10, y: y + barH / 2 + 4, "text-anchor": "end", "font-size": 11.5, class: "val",
-        text: r0.lang + " · " + (r0.cond === "base" ? "base" : "ablit") }));
+        text: r0.lang + " · " + (r0.cond === "base" ? "base" : "modified") }));
       var acc = 0;
       segs.forEach(function (sg) {
         var v = r0[sg[0]]; if (!v) { acc += v; return; }
@@ -324,10 +321,10 @@
         acc += v;
       });
     });
-    root.setAttribute("aria-label", "Abliteration removes the refusal everywhere; in French and English the documented account jumps to 71% and 66%, but in Chinese Beijing's framing stays the plurality at 49%.");
+    root.setAttribute("aria-label", "After the weight change, evaluators classify 70.0% of French and 63.3% of English answers as documented accounts. Beijing framing remains at 48.9% in exploratory Chinese. These classifications are provisional.");
     mount.appendChild(legend(segs.map(function (sg) { return { label: sg[1], color: sg[2] }; })));
     mount.appendChild(root);
-    if (onClick) mount.appendChild(hint("Click a bar to compare a base vs abliterated answer."));
+    if (onClick) mount.appendChild(hint("The response excerpts below compare the original and modified Qwen weights."));
   }
 
   // ---- fixed retrieval: China - West retention contrast, +/-10pp margin band ----
@@ -355,7 +352,6 @@
     });
     root.setAttribute("aria-label", "Fixed-retrieval China minus West retention contrast; Qwen -5pp, inconclusive against the +/-10pp margin.");
     mount.appendChild(root);
-    mount.appendChild(hint("Shaded band = ±10pp equivalence margin. An interval crossing it is inconclusive."));
   }
 
   var RENDER = { refusal: refusal, relay: relay, sysprompt: sysprompt, entity: entity, abliteration: abliteration };
@@ -371,7 +367,7 @@
           else if (kind === "stance") dotplot(mount, c.stance_lang.map(function (m) { return Object.assign({ model: m.model }, m.cells[0]); }),
             { showLang: false, aria: "Stance deltas on identical French evidence: Qwen -0.54, Mistral -0.75, Gemma -0.75, all harsher on China than on the West." }, handlers);
           else if (kind === "stance_lang") { var cells = []; c.stance_lang.forEach(function (m) { m.cells.forEach(function (cl) { cells.push(Object.assign({ model: m.model }, cl)); }); });
-            dotplot(mount, cells, { showLang: true, aria: "Stance by language: only Qwen crosses zero, and only in Chinese (+0.30)." }, handlers); }
+            dotplot(mount, cells, { showLang: true, aria: "Relative assessment by language. Qwen has a positive Chinese estimate of +0.30, with a 95% interval from -0.02 to +0.68. Chinese results are exploratory." }, handlers); }
           else if (kind === "fixed_rag") fixedRag(mount, c.fixed_rag);
           else if (kind === "relay") relay(mount, c.relay, handlers);
           else if (kind === "sysprompt") sysprompt(mount, c.sysprompt, handlers);
